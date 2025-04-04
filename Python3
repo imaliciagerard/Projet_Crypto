@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.x509.oid import ExtensionOID, AuthorityInformationAccessOID
 from cryptography.x509.ocsp import OCSPRequestBuilder, load_der_ocsp_response
 from datetime import UTC
-import ecdsa
+from cryptography.hazmat.primitives.asymmetric import ec
 
 CRL_CACHE_DIR = "crl_cache"
 os.makedirs(CRL_CACHE_DIR, exist_ok=True)
@@ -60,19 +60,12 @@ def verify_signature_rsa(public_key, signature, data, hash_algorithm):
 # === Signature ECDSA ===
 def verify_signature_ecdsa(public_key, signature, data, hash_algorithm):
     try:
-        pem = public_key.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
-        ).decode()
-        vk = ecdsa.VerifyingKey.from_pem(pem)
-        hash_func = get_hash_function(hash_algorithm)
-        digest = hash_func(data).digest()
-        return vk.verify(signature, digest, hashfunc=hash_func)
-    except ecdsa.BadSignatureError:
-        return False
+        public_key.verify(signature, data, ec.ECDSA(hash_algorithm))
+        return True
     except Exception as e:
         print(f"Erreur lors de la vérification de signature ECDSA : {e}")
         return False
+
 
 # === Chaîne de certificats ===
 def verify_certificate_chain(certificates):
