@@ -34,7 +34,7 @@ def extract_certificate_info(cert):
     info = {
         "Sujet": cert.subject.rfc4514_string(),
         "Émetteur": cert.issuer.rfc4514_string(),
-        "Validité": f"{cert.not_valid_before} - {cert.not_valid_after}",
+        "Validité": f"{cert.not_valid_before_utc} - {cert.not_valid_after_utc}",
         "Numéro de série": cert.serial_number,
         "Signature Algorithme": cert.signature_algorithm_oid._name,
         "Clé publique": cert.public_key().public_bytes(
@@ -76,8 +76,9 @@ def verify_certificate_signature(cert):
 
 def check_validity_period(cert):
     now = datetime.now(timezone.utc)
-    not_before = cert.not_valid_before.replace(tzinfo=timezone.utc)
-    not_after = cert.not_valid_after.replace(tzinfo=timezone.utc)
+    not_before = cert.not_valid_before_utc
+    not_after = cert.not_valid_after_utc
+
 
     if not_before <= now <= not_after:
         return "Le certificat est actuellement valide."
