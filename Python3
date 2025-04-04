@@ -80,12 +80,12 @@ def verify_certificate_chain(certificates):
         parent_cert = certificates[i]
         child_cert = certificates[i + 1]
 
-        print(f"\n🔍 Vérification de la correspondance Issuer -> Subject")
+        print(f"\n Vérification de la correspondance Issuer -> Subject")
         print(f"Issuer attendu : {parent_cert.subject}")
         print(f"Issuer du certificat enfant : {child_cert.issuer}")
 
         if child_cert.issuer != parent_cert.subject:
-            print("❌ Erreur : Le sujet de l'émetteur ne correspond pas au certificat parent.")
+            print(" Erreur : Le sujet de l'émetteur ne correspond pas au certificat parent.")
             return False
 
         public_key = parent_cert.public_key()
@@ -95,14 +95,14 @@ def verify_certificate_chain(certificates):
 
         if isinstance(public_key, cryptography.hazmat.primitives.asymmetric.rsa.RSAPublicKey):
             if not verify_signature_rsa(public_key, signature, data, hash_algorithm):
-                print("❌ Échec de la vérification de signature RSA.")
+                print(" Échec de la vérification de signature RSA.")
                 return False
         elif isinstance(public_key, cryptography.hazmat.primitives.asymmetric.ec.EllipticCurvePublicKey):
             if not verify_signature_ecdsa(public_key, signature, data, hash_algorithm):
-                print("❌ Échec de la vérification de signature ECDSA.")
+                print(" Échec de la vérification de signature ECDSA.")
                 return False
         else:
-            print(f"❌ Type de clé non supporté: {type(public_key)}")
+            print(f" Type de clé non supporté: {type(public_key)}")
             return False
     return True
 
@@ -112,20 +112,20 @@ def check_basic_constraints(cert):
         ext = cert.extensions.get_extension_for_oid(ExtensionOID.BASIC_CONSTRAINTS).value
         return ext.ca
     except cryptography.x509.ExtensionNotFound:
-        print(f"⚠️ Avertissement: Extension BasicConstraints non trouvée")
+        print(f" Avertissement: Extension BasicConstraints non trouvée")
         return False
 
 def check_key_usage(cert, is_ca):
     try:
         key_usage = cert.extensions.get_extension_for_oid(ExtensionOID.KEY_USAGE).value
         if is_ca and not key_usage.key_cert_sign:
-            print("❌ Erreur: Certificat CA sans l'autorisation key_cert_sign")
+            print(" Erreur: Certificat CA sans l'autorisation key_cert_sign")
             return False
         if not is_ca and key_usage.key_cert_sign:
-            print("⚠️ Avertissement: Certificat non-CA avec l'autorisation key_cert_sign")
+            print(" Avertissement: Certificat non-CA avec l'autorisation key_cert_sign")
         return True
     except cryptography.x509.ExtensionNotFound:
-        print(f"⚠️ Avertissement: Extension KeyUsage non trouvée")
+        print(f" Avertissement: Extension KeyUsage non trouvée")
         return False
 
 # === Téléchargement et cache CRL ===
@@ -142,9 +142,9 @@ def download_crl(crl_url):
                 print(f"📄 CRL en cache utilisée : {crl_url}")
                 return crl
             else:
-                print(f"🔄 CRL expirée, nouveau téléchargement : {crl_url}")
+                print(f" CRL expirée, nouveau téléchargement : {crl_url}")
 
-    print(f"⬇️ Téléchargement CRL : {crl_url}")
+    print(f" Téléchargement CRL : {crl_url}")
     response = requests.get(crl_url, timeout=10)
     response.raise_for_status()
     crl_data = response.content
@@ -165,16 +165,16 @@ def check_revocation_crl(cert, issuer_cert):
                 if uri.value.startswith("http"):
                     crl = download_crl(uri.value)
                     if not crl.is_signature_valid(issuer_cert.public_key()):
-                        print("❌ Signature de la CRL invalide.")
+                        print("Signature de la CRL invalide.")
                         return False
                     for revoked_cert in crl:
                         if revoked_cert.serial_number == cert.serial_number:
-                            print("❌ Certificat révoqué selon la CRL.")
+                            print("Certificat révoqué selon la CRL.")
                             return False
-        print("✅ Certificat non révoqué selon la CRL.")
+        print("Certificat non révoqué selon la CRL.")
         return True
     except Exception as e:
-        print(f"⚠️ Erreur vérification CRL : {e}")
+        print(f"Erreur vérification CRL : {e}")
         return True
 
 # === Vérification OCSP ===
@@ -187,11 +187,11 @@ def check_revocation_ocsp(cert, issuer_cert):
             if desc.access_method == AuthorityInformationAccessOID.OCSP
         ]
         if not ocsp_urls:
-            print("ℹ️ Aucun point OCSP trouvé.")
+            print("Aucun point OCSP trouvé.")
             return True
 
         ocsp_url = ocsp_urls[0]
-        print(f"🌐 Vérification OCSP via {ocsp_url}")
+        print(f"Vérification OCSP via {ocsp_url}")
         builder = OCSPRequestBuilder().add_certificate(cert, issuer_cert, hashes.SHA1())
         req = builder.build()
         headers = {'Content-Type': 'application/ocsp-request'}
@@ -199,24 +199,24 @@ def check_revocation_ocsp(cert, issuer_cert):
         ocsp_response = load_der_ocsp_response(response.content)
 
         if ocsp_response.response_status.name != "SUCCESSFUL":
-            print(f"❌ OCSP échoué : {ocsp_response.response_status}")
+            print(f"OCSP échoué : {ocsp_response.response_status}")
             return False
 
         status = ocsp_response.certificate_status
         if status.name == "good":
-            print("✅ Certificat valide selon OCSP.")
+            print("Certificat valide selon OCSP.")
             return True
         elif status.name == "revoked":
-            print("❌ Certificat révoqué selon OCSP.")
+            print("Certificat révoqué selon OCSP.")
             return False
         elif status.name == "unknown":
-            print("❓ Certificat inconnu dans l’OCSP (statut 'unknown'). On continue par précaution.")
+            print("Certificat inconnu dans l’OCSP (statut 'unknown'). On continue par précaution.")
             return True
         else:
-            print(f"❓ Statut OCSP inattendu : {status.name}")
+            print(f"Statut OCSP inattendu : {status.name}")
             return True
     except Exception as e:
-        print(f"⚠️ Erreur OCSP : {e}")
+        print(f"Erreur OCSP : {e}")
         return True
 
 # === MAIN ===
@@ -229,28 +229,28 @@ def main():
     certificates = [load_certificate(args.format, file) for file in args.certfiles]
 
     if not verify_certificate_chain(certificates):
-        print("❌ La chaîne de certificats n'est pas valide.")
+        print("La chaîne de certificats n'est pas valide.")
         sys.exit(1)
 
     for i, cert in enumerate(certificates):
         is_ca = check_basic_constraints(cert)
         if not check_key_usage(cert, is_ca):
-            print(f"❌ Le certificat {i} a une extension KeyUsage incorrecte.")
+            print(f"Le certificat {i} a une extension KeyUsage incorrecte.")
             sys.exit(1)
 
     for i in range(1, len(certificates)):
         cert = certificates[i]
         issuer = certificates[i - 1]
 
-        print(f"\n🔎 Vérification révocation pour le certificat {i}...")
+        print(f"\n Vérification révocation pour le certificat {i}...")
         if not check_revocation_crl(cert, issuer):
-            print("❌ Révocation CRL détectée.")
+            print("Révocation CRL détectée.")
             sys.exit(1)
         if not check_revocation_ocsp(cert, issuer):
-            print("❌ Révocation OCSP détectée.")
+            print("Révocation OCSP détectée.")
             sys.exit(1)
 
-    print("\n🎉 Tous les certificats sont valides et non révoqués !")
+    print("\n Tous les certificats sont valides et non révoqués !")
 
 if __name__ == "__main__":
     main()
