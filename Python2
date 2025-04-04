@@ -69,7 +69,7 @@ def verify_signature_ecdsa(public_key, signature, data, hash_algorithm):
         digest = hash_func(data).digest()
         
         return vk.verify(signature, digest, hashfunc=hash_func)
-    except ecdsa.BadSignatureError:
+    except ecdsa.BadSignatureError: 
         return False
     except Exception as e:
         print(f"Erreur lors de la vérification de signature ECDSA : {e}")
@@ -81,12 +81,12 @@ def verify_certificate_chain(certificates):
         parent_cert = certificates[i]     # Le parent doit être un CA
         child_cert = certificates[i + 1]  # Le certificat signé par le parent
         
-        print(f"\n🔍 Vérification de la correspondance Issuer -> Subject")
+        print(f"\n Vérification de la correspondance Issuer -> Subject")
         print(f"Issuer attendu : {parent_cert.subject}")
         print(f"Issuer du certificat enfant : {child_cert.issuer}")
         
         if child_cert.issuer != parent_cert.subject:
-            print("❌ Erreur : Le sujet de l'émetteur ne correspond pas au certificat parent.")
+            print("Erreur : Le sujet de l'émetteur ne correspond pas au certificat parent.")
             return False
 
         public_key = parent_cert.public_key()
@@ -96,14 +96,14 @@ def verify_certificate_chain(certificates):
 
         if isinstance(public_key, cryptography.hazmat.primitives.asymmetric.rsa.RSAPublicKey):
             if not verify_signature_rsa(public_key, signature, data, hash_algorithm):
-                print("❌ Échec de la vérification de signature RSA.")
+                print("Échec de la vérification de signature RSA.")
                 return False
         elif isinstance(public_key, cryptography.hazmat.primitives.asymmetric.ec.EllipticCurvePublicKey):
             if not verify_signature_ecdsa(public_key, signature, data, hash_algorithm):
-                print("❌ Échec de la vérification de signature ECDSA.")
+                print("Échec de la vérification de signature ECDSA.")
                 return False
         else:
-            print(f"❌ Type de clé non supporté: {type(public_key)}")
+            print(f"Type de clé non supporté: {type(public_key)}")
             return False
     return True
 
@@ -112,20 +112,20 @@ def check_basic_constraints(cert):
         ext = cert.extensions.get_extension_for_oid(ExtensionOID.BASIC_CONSTRAINTS).value
         return ext.ca
     except cryptography.x509.ExtensionNotFound:
-        print(f"⚠️ Avertissement: Extension BasicConstraints non trouvée")
+        print(f"Avertissement: Extension BasicConstraints non trouvée")
         return False
 
 def check_key_usage(cert, is_ca):
     try:
         key_usage = cert.extensions.get_extension_for_oid(ExtensionOID.KEY_USAGE).value
         if is_ca and not key_usage.key_cert_sign:
-            print("❌ Erreur: Certificat CA sans l'autorisation key_cert_sign")
+            print("Erreur: Certificat CA sans l'autorisation key_cert_sign")
             return False
         if not is_ca and key_usage.key_cert_sign:
-            print("⚠️ Avertissement: Certificat non-CA avec l'autorisation key_cert_sign")
+            print("Avertissement: Certificat non-CA avec l'autorisation key_cert_sign")
         return True
     except cryptography.x509.ExtensionNotFound:
-        print(f"⚠️ Avertissement: Extension KeyUsage non trouvée")
+        print(f"Avertissement: Extension KeyUsage non trouvée")
         return False
 
 def main():
@@ -137,16 +137,16 @@ def main():
     certificates = [load_certificate(args.format, file) for file in args.certfiles]
     
     if not verify_certificate_chain(certificates):
-        print("❌ La chaîne de certificats n'est pas valide.")
+        print("La chaîne de certificats n'est pas valide.")
         sys.exit(1)
     
     for i, cert in enumerate(certificates):
         is_ca = check_basic_constraints(cert)
         if not check_key_usage(cert, is_ca):
-            print(f"❌ Le certificat {i} a une extension KeyUsage incorrecte.")
+            print(f"Le certificat {i} a une extension KeyUsage incorrecte.")
             sys.exit(1)
     
-    print("\n✅ La chaîne de certificats est valide ! 🎉")
+    print("\n La chaîne de certificats est valide !")
 
 if __name__ == "__main__":
     main()
