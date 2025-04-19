@@ -12,6 +12,7 @@ from cryptography.x509.oid import ExtensionOID, AuthorityInformationAccessOID
 from cryptography.x509.ocsp import OCSPRequestBuilder, load_der_ocsp_response
 from datetime import UTC
 from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.x509.ocsp import OCSPCertStatus
 
 CRL_CACHE_DIR = "crl_cache"
 os.makedirs(CRL_CACHE_DIR, exist_ok=True)
@@ -195,19 +196,20 @@ def check_revocation_ocsp(cert, issuer_cert):
             print(f"OCSP échoué : {ocsp_response.response_status}")
             return False
 
+       
         status = ocsp_response.certificate_status
-        if status.name == "good":
+        if status == OCSPCertStatus.GOOD:
             print("Certificat valide selon OCSP.")
             return True
-        elif status.name == "revoked":
+        elif status == OCSPCertStatus.REVOKED:
             print("Certificat révoqué selon OCSP.")
             return False
-        elif status.name == "unknown":
+        elif status == OCSPCertStatus.UNKNOWN:
             print("Certificat inconnu dans l’OCSP (statut 'unknown'). On continue par précaution.")
             return True
         else:
-            print(f"Statut OCSP inattendu : {status.name}")
-            return True
+            print(f"Statut OCSP inattendu : {status}")
+            return False
     except Exception as e:
         print(f"Erreur OCSP : {e}")
         return True
