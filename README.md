@@ -6,3 +6,5 @@ source venv/bin/activate
 pip install cryptography
 pip install requests
 pip install ec
+
+Pour tester le code Python3 sur certficiat révoqué --> python3 validate-cert.py PEM ISRGRootX1.pem E5.pem revoked-badssl-com.pem
