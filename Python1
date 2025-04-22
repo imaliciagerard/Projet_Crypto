@@ -34,11 +34,11 @@ def extract_certificate_info(cert):
         "Validité": f"{cert.not_valid_before_utc} - {cert.not_valid_after_utc}",
         "Numéro de série": cert.serial_number,
         "Signature Algorithme": cert.signature_algorithm_oid._name,
-        "Clé publique": cert.public_key().public_bytes(
+        "\n Clé publique": cert.public_key().public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
         ).decode(),
-        "Key Usage": key_usage_ext
+        "\n Key Usage": key_usage_ext
     }
     return info
 
@@ -90,13 +90,19 @@ def main():
     cert = load_certificate(args.format, args.certfile)
     cert_info = extract_certificate_info(cert)
 
-    print("\n Informations extraites du certificat :")
+    print("\n" + "*"*60)
+    print("Informations extraites du certificat :".center(60))
+    print("*"*60)
     for key, value in cert_info.items():
         print(f"{key}: {value}")
+        
+    print("\n" + "*"*60)
+    print("Résultats des vérifications :".center(60))
+    print("*"*60)
 
     # Vérification de la signature
     if is_self_signed(cert):
-        print("\n Certificat auto-signé détecté (racine). Vérification avec sa propre clé...")
+        print("Certificat auto-signé détecté (racine). Vérification avec sa propre clé...")
         verification_result = verify_certificate_signature(cert, cert)
     elif args.issuer:
         issuer_cert = load_certificate(args.format, args.issuer)
@@ -105,11 +111,12 @@ def main():
     else:
         verification_result = " Ce certificat n'est pas auto-signé. Spécifiez --issuer pour vérifier sa signature."
 
-    print("\n" + verification_result)
+    print(verification_result)
 
     # Vérification de la période de validité
     validity_result = check_validity_period(cert)
-    print("\n" + validity_result)
+    print(validity_result)
+    print()
 
 if __name__ == "__main__":
     main()
