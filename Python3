@@ -133,7 +133,7 @@ def download_crl(crl_url):
             except ValueError:
                 crl = cryptography.x509.load_pem_x509_crl(crl_data, default_backend())
             if crl.next_update_utc > datetime.datetime.now(UTC):
-                print(f"📄 CRL en cache utilisée : {crl_url}")
+                print(f"CRL en cache utilisée : {crl_url}")
                 return crl
             else:
                 print(f" CRL expirée, nouveau téléchargement : {crl_url}")
