@@ -90,7 +90,7 @@ def main():
     cert = load_certificate(args.format, args.certfile)
     cert_info = extract_certificate_info(cert)
 
-    print("\n🔎 Informations extraites du certificat :")
+    print("\n Informations extraites du certificat :")
     for key, value in cert_info.items():
         print(f"{key}: {value}")
 
