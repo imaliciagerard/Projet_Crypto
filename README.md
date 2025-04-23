@@ -15,6 +15,6 @@ Pour tester le code Python1 : - python3 validate-cert.py PEM revoked-badssl-com.
 On peut les lancer sans l'issuer mais le code va préciser que les certificats ne sont pas auto-signés et donc qu'il faut préciser l'issuer.
 Pour tester le code Python3 et Python2 sur certficiat révoqué --> python3 validate-cert.py PEM ISRGRootX1.pem E5.pem revoked-badssl-com.pem
 Pour tester le code Python3 et Python2 sur certificat le monde --> python3 validate-cert.py PEM GlobalSign-Root.pem GlobalSign-Intermediate-2024.pem lemonde-fr.pem
-Pour tester le code Python3 et Python2 sur certificat le tbs --> python3 validate-cert.py PEM ISRGRootX1.pem E5.pem revoked-badssl-com.pem
+Pour tester le code Python3 et Python2 sur certificat le tbs --> python3 validate-cert.py PEM Root-USERTrust.pem Correct-Sectigo-Intermediate.pem www-tbs-certificats-com.pem
 
 Il y a des captures d'écrans de chaque codes dans les branches concernées (tbs, lemonde, revokedbadssl)
