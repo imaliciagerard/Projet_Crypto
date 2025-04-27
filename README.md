@@ -37,7 +37,7 @@ pip install ec
 
 ---
 
-# Tester les différents codes (Python1, Python2, Python3)
+# Tester les différents codes 
 
 ## 1. Tester Python1
 
