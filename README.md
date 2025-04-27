@@ -2,7 +2,7 @@
 
 ## Sommaire
 - [Commandes pour lancer le programme](#commandes-pour-lancer-le-programme)
-- [Tester les différents codes (Python1, Python2, Python3)](#tester-les-différents-codes)
+- [Tester les différents codes](#tester-les-différents-codes)
 - [Captures d'écran](#captures-décran)
 
 ---
