@@ -72,11 +72,17 @@ python3 validate-cert.py PEM www-tbs-certificats-com.pem --issuer Correct-Sectig
 ```bash
 python3 validate-cert-chain.py PEM ISRGRootX1.pem E5.pem revoked-badssl-com.pem
 ```
+```bash
+python3 validate-cert-chain2.py PEM ISRGRootX1.pem E5.pem revoked-badssl-com.pem
+```
 
 ### 2.2. Certificat du site lemonde.fr
 
 ```bash
 python3 validate-cert-chain.py PEM GlobalSign-Root.pem GlobalSign-Intermediate-2024.pem lemonde-fr.pem
+```
+```bash
+python3 validate-cert-chain2.py PEM GlobalSign-Root.pem GlobalSign-Intermediate-2024.pem lemonde-fr.pem
 ```
 
 ### 2.3. Certificat du site www.tbs-certificats.com
@@ -84,7 +90,9 @@ python3 validate-cert-chain.py PEM GlobalSign-Root.pem GlobalSign-Intermediate-2
 ```bash
 python3 validate-cert-chain.py PEM Root-USERTrust.pem Correct-Sectigo-Intermediate.pem www-tbs-certificats-com.pem
 ```
-
+```bash
+python3 validate-cert-chain2.py PEM Root-USERTrust.pem Correct-Sectigo-Intermediate.pem www-tbs-certificats-com.pem
+```
 ---
 
 # Captures d'écran
