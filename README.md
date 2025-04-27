@@ -66,7 +66,8 @@ python3 validate-cert.py PEM www-tbs-certificats-com.pem --issuer Correct-Sectig
 
 ---
 
-## Partie 3.2 Validation d'une chaine de certificats
+
+## Partie 3.2 - Validation d'une chaine de certificats
 
 ### Certificat révoqué
 
@@ -88,7 +89,8 @@ python3 validate-cert-chain.py PEM Root-USERTrust.pem Correct-Sectigo-Intermedia
 
 ---
 
-## Partie 3.3 Vérification du status de révocation 
+
+## Partie 3.3 - Vérification du status de révocation 
 
 ### Certificat révoqué
 
@@ -107,6 +109,8 @@ python3 validate-cert-chain2.py PEM GlobalSign-Root.pem GlobalSign-Intermediate-
 ```bash
 python3 validate-cert-chain2.py PEM Root-USERTrust.pem Correct-Sectigo-Intermediate.pem www-tbs-certificats-com.pem
 ```
+
+
 ---
 
 
