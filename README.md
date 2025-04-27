@@ -49,3 +49,7 @@ Il y a des captures d'écrans de chaque codes dans les branches concernées (tbs
 
 ```bash
 python3 -m venv venv
+
+2. Activer l'environnement virtuel
+source venv/bin/activate
+
